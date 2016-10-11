@@ -3,7 +3,7 @@ package callback
 import (
 	_ "crypto/sha512"
 	"encoding/json"
-	"github.com/auth0/auth0-golang/examples/regular-web-app/app"
+	"github.com/auth0-samples/auth0-golang-web-app/01-Login/app"
 	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
