@@ -10,7 +10,7 @@ Rename the `.env.example` file to `.env` and provide your Auth0 credentials.
 # .env
 
 AUTH0_CLIENT_ID={CLIENT_ID}
-AUTH0_DOMAIN={DOMAN}
+AUTH0_DOMAIN={DOMAIN}
 AUTH0_CLIENT_SECRET={CLIENT_SECRET}
 AUTH0_CALLBACK_URL=http://localhost:3000/callback
 ```
