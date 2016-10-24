@@ -1,17 +1,17 @@
 package app
 
 import (
-	"github.com/astaxie/beego/session"
+	"encoding/gob"
+
+	"github.com/gorilla/sessions"
 )
 
 var (
-	GlobalSessions *session.Manager
+	Store *sessions.CookieStore
 )
 
-func Init() {
-	GlobalSessions, _ = session.NewManager("memory", &session.ManagerConfig{
-		CookieName: "gosessionid",
-		Gclifetime: 3600,
-	})
-	go GlobalSessions.GC()
+func Init() error {
+	Store = sessions.NewCookieStore([]byte("something-very-secret"))
+	gob.Register(map[string]interface{}{})
+	return nil
 }

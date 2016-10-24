@@ -7,10 +7,14 @@ import (
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 
-	session, _ := app.GlobalSessions.SessionStart(w, r)
-	defer session.SessionRelease(w)
-	if session.Get("profile") == nil {
-		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	session, err := app.Store.Get(r, "auth-session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if _, ok := session.Values["profile"]; !ok {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	} else {
 		next(w, r)
 	}

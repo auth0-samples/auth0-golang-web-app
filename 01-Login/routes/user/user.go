@@ -8,8 +8,11 @@ import (
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {
 
-	session, _ := app.GlobalSessions.SessionStart(w, r)
-	defer session.SessionRelease(w)
+	session, err := app.Store.Get(r, "auth-session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	templates.RenderTemplate(w, "user", session.Get("profile"))
+	templates.RenderTemplate(w, "user", session.Values["profile"])
 }

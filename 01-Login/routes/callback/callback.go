@@ -49,19 +49,27 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var profile map[string]interface{}
-	if err := json.Unmarshal(raw, &profile); err != nil {
+	if err = json.Unmarshal(raw, &profile); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	session, _ := app.GlobalSessions.SessionStart(w, r)
-	defer session.SessionRelease(w)
+	session, err := app.Store.Get(r, "auth-session")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	session.Set("id_token", token.Extra("id_token"))
-	session.Set("access_token", token.AccessToken)
-	session.Set("profile", profile)
+	session.Values["id_token"] = token.Extra("id_token")
+	session.Values["access_token"] = token.AccessToken
+	session.Values["profile"] = profile
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	// Redirect to logged in page
-	http.Redirect(w, r, "/user", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/user", http.StatusSeeOther)
 
 }
