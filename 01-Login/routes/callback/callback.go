@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"github.com/auth0-samples/auth0-golang-web-app/01-Login/app"
 	"golang.org/x/oauth2"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -41,16 +40,10 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	raw, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	var profile map[string]interface{}
-	if err = json.Unmarshal(raw, &profile); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
