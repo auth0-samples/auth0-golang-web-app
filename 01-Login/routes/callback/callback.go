@@ -1,11 +1,11 @@
 package callback
 
 import (
+	"context"
 	_ "crypto/sha512"
 	"encoding/json"
-	"github.com/auth0-samples/auth0-golang-web-app/01-Login/app"
+	"../../app"
 	"golang.org/x/oauth2"
-	"io/ioutil"
 	"net/http"
 	"os"
 )
@@ -27,29 +27,24 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	code := r.URL.Query().Get("code")
 
-	token, err := conf.Exchange(oauth2.NoContext, code)
+	token, err := conf.Exchange(context.TODO(), code)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Getting now the userInfo
-	client := conf.Client(oauth2.NoContext, token)
+	client := conf.Client(context.TODO(), token)
 	resp, err := client.Get("https://" + domain + "/userinfo")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	raw, err := ioutil.ReadAll(resp.Body)
 	defer resp.Body.Close()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	var profile map[string]interface{}
-	if err = json.Unmarshal(raw, &profile); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
