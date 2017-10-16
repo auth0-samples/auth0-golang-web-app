@@ -1,7 +1,7 @@
 package main
 
 import (
-        "github.com/auth0-samples/auth0-golang-web-app/01-Login/app"
+	"./app"
 	"github.com/joho/godotenv"
 	"log"
 )
