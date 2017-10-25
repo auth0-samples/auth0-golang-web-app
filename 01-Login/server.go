@@ -10,6 +10,7 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"net/http"
+	"log"
 )
 
 func StartServer() {
@@ -25,5 +26,6 @@ func StartServer() {
 	))
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 	http.Handle("/", r)
+	log.Print("Server listening on http://localhost:3000/")
 	http.ListenAndServe("0.0.0.0:3000", nil)
 }
