@@ -4,6 +4,9 @@ import (
 	"golang.org/x/oauth2"
 	"net/http"
 	"os"
+	"crypto/rand"
+	"encoding/base64"
+	"../../app"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +29,25 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		aud = "https://" + domain + "/userinfo"
 	}
 
+	// Generate random state
+	b := make([]byte, 32)
+	rand.Read(b)
+	state := base64.StdEncoding.EncodeToString(b)
+
+	session, err := app.Store.Get(r, "state")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	session.Values["state"] = state
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	audience := oauth2.SetAuthURLParam("audience", aud)
-	url := conf.AuthCodeURL("state", audience)
+	url := conf.AuthCodeURL(state, audience)
 
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
