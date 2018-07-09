@@ -1,5 +1,7 @@
 # Auth0 - Go Web App
 
+[![CircleCI](https://circleci.com/gh/auth0-community/auth0-golang-web-app.svg?style=svg)](https://circleci.com/gh/auth0-community/auth0-golang-web-app)
+
 This sample demonstrates how to add authentication to a Go web app using Auth0.
 
 Check the [Go Quickstart](https://auth0.com/docs/quickstart/webapp/golang) to better understand this sample.
@@ -26,7 +28,7 @@ If you have found a bug or if you have a feature request, please report them at 
 
 ## Author
 
-[Auth0](auth0.com)
+[Auth0](https://auth0.com)
 
 ## License
 
