@@ -1,16 +1,18 @@
 package main
 
 import (
-	"./routes/callback"
-	"./routes/home"
-	"./routes/middlewares"
-	"./routes/user"
-	"./routes/login"
-	"./routes/logout"
+	"log"
+	"net/http"
+
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
-	"net/http"
-	"log"
+
+	"./routes/callback"
+	"./routes/home"
+	"./routes/login"
+	"./routes/logout"
+	"./routes/middlewares"
+	"./routes/user"
 )
 
 func StartServer() {
@@ -27,5 +29,5 @@ func StartServer() {
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(http.Dir("public/"))))
 	http.Handle("/", r)
 	log.Print("Server listening on http://localhost:3000/")
-	http.ListenAndServe("0.0.0.0:3000", nil)
+	log.Fatal(http.ListenAndServe("0.0.0.0:3000", nil))
 }

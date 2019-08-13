@@ -2,8 +2,8 @@ package logout
 
 import (
 	"net/http"
-	"os"
 	"net/url"
+	"os"
 )
 
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +14,7 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	Url, err := url.Parse("https://" + domain)
 
 	if err != nil {
-		panic("boom")
+		panic(err.Error())
 	}
 
 	Url.Path += "/v2/logout"

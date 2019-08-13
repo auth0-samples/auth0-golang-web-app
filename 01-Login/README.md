@@ -17,10 +17,7 @@ AUTH0_CLIENT_ID={CLIENT_ID}
 AUTH0_DOMAIN={DOMAIN}
 AUTH0_CLIENT_SECRET={CLIENT_SECRET}
 AUTH0_CALLBACK_URL=http://localhost:3000/callback
-AUTH0_AUDIENCE=
 ```
-
-__Note:__ If you are not implementing any API, leave the `AUTH0_AUDIENCE` variable empty, will be set with `https://AUTH0_DOMAIN/userinfo`.
 
 Once you've set your Auth0 credentials in the `.env` file, run `go get -d` to install the Go dependencies.
 
@@ -48,7 +45,7 @@ If you have found a bug or if you have a feature request, please report them at 
 
 ## Author
 
-[Auth0](auth0.com)
+[Auth0](https://auth0.com)
 
 ## License
 

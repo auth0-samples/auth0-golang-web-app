@@ -1,8 +1,9 @@
 package middlewares
 
 import (
-	"../../app"
 	"net/http"
+
+	"../../app"
 )
 
 func IsAuthenticated(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
