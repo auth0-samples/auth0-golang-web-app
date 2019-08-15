@@ -1,10 +1,10 @@
 package templates
 
 import (
-    "net/http"
     "html/template"
-    "path/filepath"
+    "net/http"
     "os"
+    "path/filepath"
 )
 
 func RenderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {

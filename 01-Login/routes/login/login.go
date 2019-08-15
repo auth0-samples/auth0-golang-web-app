@@ -12,7 +12,11 @@ import (
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Generate random state
 	b := make([]byte, 32)
-	rand.Read(b)
+	_, err := rand.Read(b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	state := base64.StdEncoding.EncodeToString(b)
 
 	session, err := app.Store.Get(r, "auth-session")
@@ -27,11 +31,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := auth.NewAuthenticator()
+	authenticator, err := auth.NewAuthenticator()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, auth.Config.AuthCodeURL(state), http.StatusTemporaryRedirect)
+	http.Redirect(w, r, authenticator.Config.AuthCodeURL(state), http.StatusTemporaryRedirect)
 }

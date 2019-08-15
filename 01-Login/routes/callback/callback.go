@@ -24,13 +24,13 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := auth.NewAuthenticator()
+	authenticator, err := auth.NewAuthenticator()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	token, err := auth.Config.Exchange(context.TODO(), r.URL.Query().Get("code"))
+	token, err := authenticator.Config.Exchange(context.TODO(), r.URL.Query().Get("code"))
 	if err != nil {
 		log.Printf("no token found: %v", err)
 		w.WriteHeader(http.StatusUnauthorized)
@@ -47,7 +47,7 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		ClientID: os.Getenv("AUTH0_CLIENT_ID"),
 	}
 
-	idToken, err := auth.Provider.Verifier(oidcConfig).Verify(context.TODO(), rawIDToken)
+	idToken, err := authenticator.Provider.Verifier(oidcConfig).Verify(context.TODO(), rawIDToken)
 
 	if err != nil {
 		http.Error(w, "Failed to verify ID Token: " + err.Error(), http.StatusInternalServerError)
