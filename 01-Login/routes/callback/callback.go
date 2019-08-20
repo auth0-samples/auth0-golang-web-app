@@ -2,71 +2,66 @@ package callback
 
 import (
 	"context"
-	_ "crypto/sha512"
-	"encoding/json"
-	"../../app"
-	"golang.org/x/oauth2"
+	"log"
 	"net/http"
 	"os"
+
+	oidc "github.com/coreos/go-oidc"
+
+	"../../app"
+	"../../auth"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
-
-	domain := os.Getenv("AUTH0_DOMAIN")
-
-	conf := &oauth2.Config{
-		ClientID:     os.Getenv("AUTH0_CLIENT_ID"),
-		ClientSecret: os.Getenv("AUTH0_CLIENT_SECRET"),
-		RedirectURL:  os.Getenv("AUTH0_CALLBACK_URL"),
-		Scopes:       []string{"openid", "profile"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  "https://" + domain + "/authorize",
-			TokenURL: "https://" + domain + "/oauth/token",
-		},
-	}
-	state := r.URL.Query().Get("state")
-	session, err := app.Store.Get(r, "state")
+	session, err := app.Store.Get(r, "auth-session")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	if state != session.Values["state"] {
-		http.Error(w, "Invalid state parameter", http.StatusInternalServerError)
+	if r.URL.Query().Get("state") != session.Values["state"] {
+		http.Error(w, "Invalid state parameter", http.StatusBadRequest)
 		return
 	}
 
-	code := r.URL.Query().Get("code")
-
-	token, err := conf.Exchange(context.TODO(), code)
+	authenticator, err := auth.NewAuthenticator()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	token, err := authenticator.Config.Exchange(context.TODO(), r.URL.Query().Get("code"))
+	if err != nil {
+		log.Printf("no token found: %v", err)
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	rawIDToken, ok := token.Extra("id_token").(string)
+	if !ok {
+		http.Error(w, "No id_token field in oauth2 token.", http.StatusInternalServerError)
+		return
+	}
+
+	oidcConfig := &oidc.Config{
+		ClientID: os.Getenv("AUTH0_CLIENT_ID"),
+	}
+
+	idToken, err := authenticator.Provider.Verifier(oidcConfig).Verify(context.TODO(), rawIDToken)
+
+	if err != nil {
+		http.Error(w, "Failed to verify ID Token: " + err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Getting now the userInfo
-	client := conf.Client(context.TODO(), token)
-	resp, err := client.Get("https://" + domain + "/userinfo")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	defer resp.Body.Close()
-
 	var profile map[string]interface{}
-	if err = json.NewDecoder(resp.Body).Decode(&profile); err != nil {
+	if err := idToken.Claims(&profile); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	session, err = app.Store.Get(r, "auth-session")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	session.Values["id_token"] = token.Extra("id_token")
+	session.Values["id_token"] = rawIDToken
 	session.Values["access_token"] = token.AccessToken
 	session.Values["profile"] = profile
 	err = session.Save(r, w)
@@ -77,5 +72,4 @@ func CallbackHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Redirect to logged in page
 	http.Redirect(w, r, "/user", http.StatusSeeOther)
-
 }
