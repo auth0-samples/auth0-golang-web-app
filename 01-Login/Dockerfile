@@ -1,16 +1,10 @@
-FROM golang:1.8-alpine3.6
+FROM golang:1.12
 
-# install git
-RUN apk --update add \
-	git openssl \
-	&& rm /var/cache/apk/*
+RUN mkdir /tmp/app
+ADD . /tmp/app
+WORKDIR /tmp/app
 
-WORKDIR /go/src
-
-ADD . /go/src
-
-RUN go-wrapper download
-
-CMD ["go", "run", "main.go", "server.go"]
-
+RUN go get -d
+RUN go build -o main .
+CMD ["/tmp/app/main"]
 EXPOSE 3000
