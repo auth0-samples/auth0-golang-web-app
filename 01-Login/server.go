@@ -7,12 +7,12 @@ import (
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 
-	"./routes/callback"
-	"./routes/home"
-	"./routes/login"
-	"./routes/logout"
-	"./routes/middlewares"
-	"./routes/user"
+	"callback"
+	"home"
+	"login"
+	"logout"
+	"middlewares"
+	"user"
 )
 
 func StartServer() {

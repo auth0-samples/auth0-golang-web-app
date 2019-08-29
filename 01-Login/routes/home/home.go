@@ -1,9 +1,8 @@
 package home
 
 import (
-	templates ".."
-
 	"net/http"
+	"templates"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
