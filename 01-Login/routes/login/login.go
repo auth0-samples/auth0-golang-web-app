@@ -5,8 +5,8 @@ import (
 	"encoding/base64"
 	"net/http"
 
-	"../../app"
-	"../../auth"
+	"app"
+	"auth"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {

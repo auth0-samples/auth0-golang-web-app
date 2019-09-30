@@ -6,7 +6,7 @@ Check the [Go Quickstart](https://auth0.com/docs/quickstart/webapp/golang) to be
 
 ## Running the App
 
-To run the app, make sure you have **go** and **go get** installed.
+To run the app, make sure you have **go** installed.
 
 Rename the `.env.example` file to `.env` and provide your Auth0 credentials.
 
@@ -19,7 +19,7 @@ AUTH0_CLIENT_SECRET={CLIENT_SECRET}
 AUTH0_CALLBACK_URL=http://localhost:3000/callback
 ```
 
-Once you've set your Auth0 credentials in the `.env` file, run `go get -d` to install the Go dependencies.
+Once you've set your Auth0 credentials in the `.env` file, run `go build ./...` to build and install the Go dependencies.
 
 Run `go run main.go server.go` to start the app and navigate to [http://localhost:3000/](http://localhost:3000/).
 
