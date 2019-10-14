@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 
-	oidc "github.com/coreos/go-oidc"
+	"github.com/coreos/go-oidc"
 
 	"app"
 	"auth"
