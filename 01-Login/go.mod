@@ -9,7 +9,7 @@ require (
 
 	github.com/codegangsta/negroni v1.0.0
 	github.com/coreos/go-oidc v2.2.1+incompatible
-	github.com/gorilla/mux v1.7.4
+	github.com/gorilla/mux v1.8.0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	home v0.0.0
 	login v0.0.0
