@@ -4,8 +4,8 @@ import (
 	"encoding/gob"
 	"log"
 
-	"github.com/joho/godotenv"
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 )
 
 var (

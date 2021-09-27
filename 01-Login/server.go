@@ -4,15 +4,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
+	"github.com/urfave/negroni"
 
-	"callback"
-	"home"
-	"login"
-	"logout"
-	"middlewares"
-	"user"
+	"01-Login/routes/callback"
+	"01-Login/routes/home"
+	"01-Login/routes/login"
+	"01-Login/routes/logout"
+	"01-Login/routes/middlewares"
+	"01-Login/routes/user"
 )
 
 func StartServer() {

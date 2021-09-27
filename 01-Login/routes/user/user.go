@@ -3,8 +3,8 @@ package user
 import (
 	"net/http"
 
-	"app"
-	"templates"
+	"01-Login/app"
+	"01-Login/routes/templates"
 )
 
 func UserHandler(w http.ResponseWriter, r *http.Request) {

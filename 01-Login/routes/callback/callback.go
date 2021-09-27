@@ -8,8 +8,8 @@ import (
 
 	"github.com/coreos/go-oidc"
 
-	"app"
-	"auth"
+	"01-Login/app"
+	"01-Login/auth"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
