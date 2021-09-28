@@ -2,7 +2,8 @@ package home
 
 import (
 	"net/http"
-	"templates"
+
+	"01-Login/routes/templates"
 )
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {

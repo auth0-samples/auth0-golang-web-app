@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/coreos/go-oidc"
+	"github.com/coreos/go-oidc/v3/oidc"
 
-	"app"
-	"auth"
+	"01-Login/app"
+	"01-Login/auth"
 )
 
 func CallbackHandler(w http.ResponseWriter, r *http.Request) {
