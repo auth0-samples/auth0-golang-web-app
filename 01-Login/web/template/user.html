@@ -7,17 +7,17 @@
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 	<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-	<script src="/public/js.cookie.js"></script>
-	<script src="/public/user.js"> </script>
-	<link href="/public/app.css" rel="stylesheet">
+	<script src="/public/js/js.cookie.js"></script>
+	<script src="/public/js/user.js"> </script>
+	<link href="/public/css/app.css" rel="stylesheet">
 </head>
 <body class="home">
 	<div class="container">
 		<div class="login-page clearfix">
 			<div class="logged-in-box auth0-box logged-in">
-				<h1 id="logo"><img src="/public/auth0_logo_final_blue_RGB.png" /></h1>
+				<h1 id="logo"><img src="/public/image/auth0_logo_final_blue_RGB.png" /></h1>
 				<img class="avatar" src="{{.picture}}"/>
-				<h2>Welcome {{.nickname}}</h2>
+				<h2>Welcome {{ .nickname }}</h2>
 				<a id="qsLogoutBtn" class="btn btn-primary btn-lg btn-logout btn-block" href="/logout">Logout</a>
 			</div>
 		</div>
