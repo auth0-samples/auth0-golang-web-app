@@ -1,43 +1,40 @@
 package router
 
 import (
-	"net/http"
+	"encoding/gob"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
-	"github.com/urfave/negroni"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
 
+	"01-Login/platform/authenticator"
 	"01-Login/platform/middleware"
-	"01-Login/routes/callback"
-	"01-Login/routes/home"
-	"01-Login/routes/login"
-	"01-Login/routes/logout"
-	"01-Login/routes/user"
+	"01-Login/web/app/callback"
+	"01-Login/web/app/home"
+	"01-Login/web/app/login"
+	"01-Login/web/app/logout"
+	"01-Login/web/app/user"
 )
 
-func New(store *sessions.FilesystemStore) *mux.Router {
-	router := mux.NewRouter()
+// New registers the routes and returns the router.
+func New(auth *authenticator.Authenticator) *gin.Engine {
+	router := gin.Default()
 
-	router.HandleFunc("/", home.HomeHandler)
+	// To store custom types in our cookies,
+	// we must first register them using gob.Register
+	gob.Register(map[string]interface{}{})
 
-	router.Handle("/login", login.Handler(store))
-	router.Handle("/logout", logout.Handler())
-	router.Handle("/callback", callback.Handler(store))
+	store := cookie.NewStore([]byte("secret"))
+	router.Use(sessions.Sessions("auth-session", store))
 
-	router.Handle(
-		"/user",
-		negroni.New(
-			negroni.HandlerFunc(middleware.IsAuthenticated(store)),
-			negroni.Wrap(user.Handler(store)),
-		),
-	)
+	router.Static("/public", "web/static")
+	router.LoadHTMLGlob("web/template/*")
 
-	router.PathPrefix("/public/").Handler(
-		http.StripPrefix(
-			"/public/",
-			http.FileServer(http.Dir("public/")),
-		),
-	)
+	router.GET("/", home.Handler)
+	router.GET("/login", login.Handler(auth))
+	router.GET("/callback", callback.Handler(auth))
+	router.GET("/user", middleware.IsAuthenticated, user.Handler)
+	router.GET("/logout", logout.Handler)
 
 	return router
 }
