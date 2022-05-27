@@ -4,4 +4,3 @@ updates:
   directory: "/01-Login"
   schedule:
     interval: daily
-  open-pull-requests-limit: 10
