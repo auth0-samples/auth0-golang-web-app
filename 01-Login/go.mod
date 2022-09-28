@@ -1,6 +1,6 @@
 module 01-Login
 
-go 1.16
+go 1.19
 
 require (
 	github.com/coreos/go-oidc/v3 v3.2.0
