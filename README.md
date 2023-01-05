@@ -1,4 +1,4 @@
-# Auth0 - Go Web App build test
+# Auth0 - Go Web App build test 2
 
 [![CircleCI](https://circleci.com/gh/auth0-samples/auth0-golang-web-app.svg?style=svg)](https://circleci.com/gh/auth0-samples/auth0-golang-web-app)
 
