@@ -3,7 +3,7 @@ module 01-Login
 go 1.19
 
 require (
-	github.com/coreos/go-oidc/v3 v3.7.0
+	github.com/coreos/go-oidc/v3 v3.8.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.1
 	github.com/joho/godotenv v1.5.1
