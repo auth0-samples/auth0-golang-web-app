@@ -43,6 +43,11 @@ jobs:
     name: Test Sample
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
       - name: Checkout Tests
         uses: actions/checkout@v4
         with:
