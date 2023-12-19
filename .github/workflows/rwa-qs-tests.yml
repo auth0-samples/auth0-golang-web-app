@@ -1,0 +1,106 @@
+name: Run Web App QuickStart Sample Tests
+
+on:
+  workflow_call:
+    inputs:
+      sample-directory:
+        required: true
+        type: string
+      api-url:
+          default: 'http://localhost:3010'
+          type: string
+      test-directory:
+          default: 'tests'
+          type: string
+      test-ref:
+          default: 'master'
+          type: string
+      callback-url:
+          default: 'http://localhost:3000/callback'
+          type: string
+      port:
+        default: 3000
+        type: number
+    secrets:
+      AUTH0_DOMAIN:
+        required: true
+      API_IDENTIFIER:
+        required: false
+      CLIENT_ID:
+        required: true
+      CLIENT_SECRET:
+        required: true
+jobs:
+  authorize:
+    name: Authorize
+    environment: ${{ github.actor != 'dependabot[bot]' && github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'external' || 'internal' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: true
+
+  tests:
+    needs: authorize
+    name: Test Sample
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Tests
+        uses: actions/checkout@v4
+        with:
+          repository: auth0-samples/spa-quickstarts-tests
+          path: ${{ inputs.test-directory }}
+          ref: ${{ inputs.test-ref }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Setup sample .env
+        working-directory: ${{ inputs.sample-directory }}
+        env:
+          AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
+          API_IDENTIFIER: ${{ secrets.API_IDENTIFIER }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          AUTH0_CALLBACK_URL: ${{ inputs.callback-url }}
+        run: |
+          sed \
+            -e "s|{DOMAIN}|$AUTH0_DOMAIN|g" \
+            -e "s|{API_IDENTIFIER}|$API_IDENTIFIER|g" \
+            -e "s|{CLIENT_ID}|$CLIENT_ID|g" \
+            -e "s|{CLIENT_SECRET}|$CLIENT_SECRET|g" \
+            .env.example > .env
+      
+      - name: Build PR image
+        working-directory: ${{ inputs.sample-directory }}
+        env:
+          IMAGE_NAME: ${{ github.event.pull_request.head.sha || github.sha }}
+          CONTAINER_NAME: ${{ github.event.pull_request.head.sha || github.sha }}
+          PORT: ${{ inputs.port }}
+        run: |
+          docker build -t $IMAGE_NAME .
+          docker run -d --env-file .env -p $PORT:$PORT --name $CONTAINER_NAME $IMAGE_NAME
+
+      - name: Wait for sample to start
+        env:
+          PORT: ${{ inputs.port }}
+        run: |
+          sleep 10
+          docker run --network host --rm appropriate/curl --retry 8 --retry-connrefused -v localhost:$PORT
+
+      - name: Run tests
+        working-directory: ${{ inputs.test-directory }}
+        env:
+            SAMPLE_PORT: ${{ inputs.port }}
+        run: |
+            docker create --env SAMPLE_PORT --network host --name tester codeceptjs/codeceptjs codeceptjs run-multiple --all --steps 
+            docker cp $(pwd)/lock_login_test.js tester:/tests/lock_login_test.js
+            docker cp $(pwd)/codecept.conf.js tester:/tests/codecept.conf.js
+            docker start -i tester
+
+      - name: Copy app container logs
+        env:
+            CONTAINER_NAME: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+            mkdir -p /tmp/out
+            docker logs $CONTAINER_NAME > /tmp/out/app_logs.log
+            docker cp tester:/tests/out /tmp/
+        if: failure()

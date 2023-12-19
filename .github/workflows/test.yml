@@ -1,0 +1,19 @@
+name: Test
+
+on:
+  workflow_dispatch:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+  push:
+    branches:
+      - main
+      - ci/run-tests-on-gh-actions
+
+jobs:
+  RS256-tests:
+    uses: ./.github/workflows/rwa-qs-tests.yml
+    with:
+        sample-directory: '01-Login'
+    secrets: inherit
