@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - ci/run-tests-on-gh-actions
 
 jobs:
   RS256-tests:
