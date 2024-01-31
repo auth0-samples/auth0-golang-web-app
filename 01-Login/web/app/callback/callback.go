@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"01-Login/platform/authenticator"
+	"01-Login/web/app/pkce"
 )
 
 // Handler for our callback.
@@ -18,8 +19,11 @@ func Handler(auth *authenticator.Authenticator) gin.HandlerFunc {
 			return
 		}
 
+		verifier := session.Get("verifier").(string)
+		exchangeOptions := pkce.ExchangeVerifier(verifier)
+
 		// Exchange an authorization code for a token.
-		token, err := auth.Exchange(ctx.Request.Context(), ctx.Query("code"))
+		token, err := auth.Exchange(ctx.Request.Context(), ctx.Query("code"), exchangeOptions...)
 		if err != nil {
 			ctx.String(http.StatusUnauthorized, "Failed to convert an authorization code into a token.")
 			return

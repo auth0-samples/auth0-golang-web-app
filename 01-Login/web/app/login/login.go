@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"01-Login/platform/authenticator"
+	"01-Login/web/app/pkce"
 )
 
 // Handler for our login.
@@ -20,15 +21,23 @@ func Handler(auth *authenticator.Authenticator) gin.HandlerFunc {
 			return
 		}
 
+		verifier, err := pkce.RandomVerifier(32)
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		// Save the state inside the session.
 		session := sessions.Default(ctx)
 		session.Set("state", state)
+		session.Set("verifier", verifier)
 		if err := session.Save(); err != nil {
 			ctx.String(http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		ctx.Redirect(http.StatusTemporaryRedirect, auth.AuthCodeURL(state))
+		authCodeOptions := pkce.Sha256Challenge(verifier)
+		ctx.Redirect(http.StatusTemporaryRedirect, auth.AuthCodeURL(state, authCodeOptions...))
 	}
 }
 
