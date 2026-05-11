@@ -46,7 +46,7 @@ version: 2.1
 parameters:
   machine_image:
     type: string
-    default: ubuntu-2004:202201-02
+    default: ubuntu-2204:2024.04.4
 jobs:
   checkout:
     machine:
