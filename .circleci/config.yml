@@ -10,6 +10,8 @@ defaults: &defaults
             sed -i 's/{CLIENT_ID}/'$AUTH0_TEST_CLIENT_ID'/g' $AUTH0_CFG
             sed -i 's/{DOMAIN}/'$AUTH0_TEST_DOMAIN'/g' $AUTH0_CFG
             sed -i 's/{CLIENT_SECRET}/'$AUTH0_TEST_CLIENT_SECRET'/g' $AUTH0_CFG
+            SESSION_SECRET=$(openssl rand -base64 32)
+            sed -i 's|a-long-random-secret-key-for-cookie-encryption|'$SESSION_SECRET'|g' $AUTH0_CFG
       - run:
           name: Build pull request
           command: |
@@ -64,6 +66,13 @@ jobs:
       - AUTH0_CFG: 01-Login/.env
       - SAMPLE_PATH: 01-Login
     <<: *defaults
+  login-quickstart:
+    machine:
+      image: << pipeline.parameters.machine_image >>
+    environment:
+      - AUTH0_CFG: 01-Login-Quickstart/.env
+      - SAMPLE_PATH: 01-Login-Quickstart
+    <<: *defaults
 
 workflows:
   version: 2
@@ -72,6 +81,10 @@ workflows:
       - checkout:
           context: Quickstart Web App Test
       - login:
+          context: Quickstart Web App Test
+          requires:
+            - checkout
+      - login-quickstart:
           context: Quickstart Web App Test
           requires:
             - checkout

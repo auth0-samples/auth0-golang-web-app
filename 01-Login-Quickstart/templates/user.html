@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 3rem;
+            background: #1a1a2e;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 440px;
+            width: 90%;
+        }
+        .avatar {
+            display: block;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 3px solid #635bff;
+            margin: 0 auto 1.5rem;
+            object-fit: cover;
+            background: #2d2d5e;
+        }
+        .avatar[src=""], .avatar:not([src]) {
+            display: none;
+        }
+        .avatar-fallback {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 3px solid #635bff;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #635bff, #4f46e5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.75rem;
+            background: rgba(0, 212, 170, 0.15);
+            color: #00d4aa;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 0.25rem;
+        }
+        .email {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        .info-card {
+            background: #0f0f23;
+            border-radius: 10px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #1e293b;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #64748b; font-size: 0.875rem; }
+        .info-value { color: #e2e8f0; font-size: 0.875rem; font-weight: 500; }
+        .btn-logout {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: transparent;
+            color: #f87171;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: 1px solid #f87171;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover {
+            background: #f87171;
+            color: #0a0a0a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img class="avatar" src="{{ .picture }}" alt="{{ .name }}" onerror="this.style.display='none';document.getElementById('avatar-fallback').style.display='flex';" />
+        <div id="avatar-fallback" class="avatar-fallback">{{ if .nickname }}{{ slice .nickname 0 1 }}{{ else }}?{{ end }}</div>
+        <span class="badge">Authenticated</span>
+        <h2>{{ .nickname }}</h2>
+        <p class="email">{{ .email }}</p>
+        <div class="info-card">
+            <div class="info-row">
+                <span class="info-label">Full Name</span>
+                <span class="info-value">{{ .name }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Nickname</span>
+                <span class="info-value">{{ .nickname }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ .email }}</span>
+            </div>
+        </div>
+        <a href="/logout" class="btn-logout">Sign Out</a>
+    </div>
+</body>
+</html>
