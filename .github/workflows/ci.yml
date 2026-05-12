@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+env:
+  AUTH0_TEST_DOMAIN: ${{ secrets.AUTH0_TEST_DOMAIN }}
+  AUTH0_TEST_CLIENT_ID: ${{ secrets.AUTH0_TEST_CLIENT_ID }}
+  AUTH0_TEST_CLIENT_SECRET: ${{ secrets.AUTH0_TEST_CLIENT_SECRET }}
+
+jobs:
+  test:
+    name: ${{ matrix.sample }}
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sample: 01-Login
+            env_file: 01-Login/.env
+          - sample: 01-Login-Quickstart
+            env_file: 01-Login-Quickstart/.env
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clone test scripts
+        run: git clone https://github.com/auth0-samples/spa-quickstarts-tests scripts
+
+      - name: Inject Auth0 test credentials
+        run: |
+          mv ${{ matrix.env_file }}.example ${{ matrix.env_file }}
+          sed -i 's/{CLIENT_ID}/'$AUTH0_TEST_CLIENT_ID'/g' ${{ matrix.env_file }}
+          sed -i 's/{DOMAIN}/'$AUTH0_TEST_DOMAIN'/g' ${{ matrix.env_file }}
+          sed -i 's/{CLIENT_SECRET}/'$AUTH0_TEST_CLIENT_SECRET'/g' ${{ matrix.env_file }}
+          SESSION_SECRET=$(openssl rand -base64 32)
+          sed -i 's|a-long-random-secret-key-for-cookie-encryption|'"$SESSION_SECRET"'|g' ${{ matrix.env_file }}
+
+      - name: Build and start app
+        run: |
+          IMAGE_TAG=$(echo "${{ matrix.sample }}" | tr '[:upper:]' '[:lower:]')
+          docker build -t "$IMAGE_TAG" ./${{ matrix.sample }}
+          docker run -d -p 3000:3000 --name app --env-file ./${{ matrix.env_file }} "$IMAGE_TAG"
+
+      - name: Wait for app to be available
+        run: |
+          timeout 60 bash -c 'until curl -sf http://localhost:3000; do sleep 2; done'
+
+      - name: Run tests
+        working-directory: scripts
+        run: |
+          docker create --network host --name tester codeceptjs/codeceptjs sh -c "npx puppeteer browsers install chrome firefox && codeceptjs run-multiple --all --steps"
+          docker cp $(pwd)/lock_login_test.js tester:/tests/lock_login_test.js
+          docker cp $(pwd)/codecept.conf.js tester:/tests/codecept.conf.js
+          docker start -i tester
+
