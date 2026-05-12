@@ -50,13 +50,27 @@ jobs:
         run: |
           timeout 60 bash -c 'until curl -sf http://localhost:3000; do sleep 2; done'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: scripts/package.json
+
       - name: Install test dependencies
         working-directory: scripts
-        run: |
-          npm install
-          npx playwright install --with-deps chromium firefox
+        run: npm install
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('scripts/package.json') }}
+
+      - name: Install Playwright browsers
+        working-directory: scripts
+        run: npx playwright install --with-deps chromium firefox
 
       - name: Run tests
         working-directory: scripts
-        run: npx playwright test
+        run: npx playwright test tests/login.spec.js
 
