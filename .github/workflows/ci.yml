@@ -28,7 +28,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Clone test scripts
-        run: git clone https://github.com/auth0-samples/spa-quickstarts-tests scripts
+        # TODO: update to main branch once https://github.com/auth0-samples/spa-quickstarts-tests/pull/X is merged
+        run: git clone --branch migrate-to-playwright https://github.com/auth0-samples/spa-quickstarts-tests scripts
 
       - name: Inject Auth0 test credentials
         run: |
@@ -49,11 +50,13 @@ jobs:
         run: |
           timeout 60 bash -c 'until curl -sf http://localhost:3000; do sleep 2; done'
 
-      - name: Run tests
+      - name: Install test dependencies
         working-directory: scripts
         run: |
-          docker create --network host --name tester codeceptjs/codeceptjs sh -c "npx puppeteer browsers install chrome firefox && codeceptjs run-multiple --all --steps"
-          docker cp $(pwd)/lock_login_test.js tester:/tests/lock_login_test.js
-          docker cp $(pwd)/codecept.conf.js tester:/tests/codecept.conf.js
-          docker start -i tester
+          npm install
+          npx playwright install --with-deps chromium firefox
+
+      - name: Run tests
+        working-directory: scripts
+        run: npx playwright test
 
