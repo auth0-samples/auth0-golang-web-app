@@ -27,10 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Clone test scripts
-        # TODO: update to main branch once https://github.com/auth0-samples/spa-quickstarts-tests/pull/X is merged
-        run: git clone --branch migrate-to-playwright https://github.com/auth0-samples/spa-quickstarts-tests scripts
-
       - name: Inject Auth0 test credentials
         run: |
           mv ${{ matrix.env_file }}.example ${{ matrix.env_file }}
@@ -53,24 +49,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: scripts/package.json
 
-      - name: Install test dependencies
-        working-directory: scripts
-        run: npm install
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('scripts/package.json') }}
-
-      - name: Install Playwright browsers
-        working-directory: scripts
-        run: npx playwright install --with-deps chromium firefox
+      - name: Install Playwright
+        working-directory: tests
+        run: |
+          npm install
+          npx playwright install --with-deps chromium firefox
 
       - name: Run tests
-        working-directory: scripts
-        run: npx playwright test tests/login.spec.js
-
+        working-directory: tests
+        run: npm test
