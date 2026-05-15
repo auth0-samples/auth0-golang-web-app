@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth0 Go Web App</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 3rem;
+            background: #1a1a2e;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 440px;
+            width: 90%;
+        }
+        .logo {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #635bff, #00d4aa);
+            border-radius: 12px;
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #f8fafc;
+        }
+        p {
+            color: #94a3b8;
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.85rem 2.5rem;
+            background: linear-gradient(135deg, #635bff, #4f46e5);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(99, 91, 255, 0.4);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 91, 255, 0.6);
+        }
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+        .footer a { color: #635bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"></div>
+        <h1>Go + Auth0</h1>
+        <p>Secure authentication for your Go web application, powered by Auth0.</p>
+        <a id="qsLoginBtn" href="/login" class="btn">Sign In</a>
+        <div class="footer">
+            Protected by <a href="https://auth0.com">Auth0</a>
+        </div>
+    </div>
+</body>
+</html>
