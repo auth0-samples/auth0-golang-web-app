@@ -3,7 +3,7 @@ module myapp
 go 1.25.0
 
 require (
-	github.com/auth0/go-auth0/v2 v2.10.0
+	github.com/auth0/go-auth0/v2 v2.14.0
 	github.com/gorilla/sessions v1.4.0
 	github.com/joho/godotenv v1.5.1
 )
